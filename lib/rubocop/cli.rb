@@ -37,6 +37,23 @@ module Rubocop
       inspected_files = []
       any_failed = false
 
+      if @options[:autocorrect]
+        offences.reverse.each do |o|
+          if o.needs_newline
+            puts "inserting linebreak at line #{o.line} column #{o.column}" if @options[:debug]
+            `perl -pi -e 's/(.{#{o.column},#{o.column}})/$1\n/ if $. == #{o.line}' #{file}`
+
+          elsif (n = o.n_missing_spaces)
+            puts "line #{o.line}, col #{o.column}, #{n} missing spaces" if @options[:debug]
+            if n > 0
+              `perl -pi -e 's/^/#{' '*n}/ if $. == #{o.line}' #{file}`
+            else
+              `perl -pi -e 's/^#{' '*(-n)}// if $. == #{o.line}' #{file}`
+            end
+          end
+        end
+      end
+
       formatter_set.started(target_files)
 
       target_files.each do |file|

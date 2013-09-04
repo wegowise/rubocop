@@ -67,6 +67,9 @@ module Rubocop
       # @api private
       attr_reader :column
 
+      attr_accessor :needs_newline,
+                    :n_missing_spaces
+
       # @api private
       def initialize(severity, location, message, cop_name)
         unless SEVERITIES.include?(severity)

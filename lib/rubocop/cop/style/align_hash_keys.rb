@@ -32,6 +32,7 @@ module Rubocop
                 convention(nil,
                            pair.loc.expression.begin.join(pair.loc.operator),
                            INCONSISTENT_SYNTAX_MSG)
+                offences.last.needs_newline = true
               end
             end
           else
@@ -39,9 +40,12 @@ module Rubocop
 
             pairs.each do |pair|
               if pair.loc.expression.column != first_col
+                difference = first_col - pair.loc.expression.column
                 convention(nil,
                            pair.loc.expression.begin.join(pair.loc.operator),
                            ALIGNMENT_MSG)
+
+                offences.last.n_missing_spaces = difference
               end
             end
           end
