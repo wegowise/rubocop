@@ -120,6 +120,9 @@ module Rubocop
           end_loc = block_node.loc.end
           do_loc = block_node.loc.begin # Actually it's either do or {.
           return if do_loc.line == end_loc.line # One-liner, not interesting.
+
+          return if ends_properly_with_bracket_on_same_line?(end_loc)
+
           if start_loc.column != end_loc.column
             # We've found that "end" is not aligned with the start node (which
             # can be a block, a variable assignment, etc). But we also allow
@@ -155,6 +158,11 @@ module Rubocop
 
         def block_is_on_next_line?(begin_node, block_node)
           begin_node.loc.line != block_node.loc.line
+        end
+
+        def ends_properly_with_bracket_on_same_line?(end_loc)
+          end_line = end_loc.source_line
+          end_line[(end_loc.column - 2)..end_loc.column] =~ /[^\s] \}/
         end
       end
     end
